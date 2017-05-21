@@ -360,7 +360,7 @@ class Fixture(gp.MonkObject):
         if not self.props:
             raise NoPropsException("have you created and added any fixture files?")
         parsed = {}
-        for name, value in self.props.items():
+        for name, value in list(self.props.items()):
             parsed[name] = self._parse_section(name, value)
         self.update(**parsed)
 
@@ -372,7 +372,7 @@ class Fixture(gp.MonkObject):
         self.use_devs = [use_devs] if isinstance(use_devs, str) else [devname.strip() for devname in use_devs if devname]
         if not self.use_devs:
             raise NoDevsChosenException("You need to set a use_devs property to your config file which contains a list of comma separated device names that are defined in your [[conns]] block")
-        self.devs = {n:d for n,d in kwargs.items()}
+        self.devs = {n:d for n,d in list(kwargs.items())}
 
     def _find_sectype(self, name, section):
         """ try to retrieve the section type, preferably by name
@@ -413,7 +413,7 @@ class Fixture(gp.MonkObject):
         sectype=self._find_sectype(name, section)
         # first parse section's properties, then apply them
         self.log("traverse subsections iteratively")
-        section = {k:self._parse_section(k,v) for k,v in section.items()}
+        section = {k:self._parse_section(k,v) for k,v in list(section.items())}
         self.log("create object for section")
         return self.parsers[sectype](name, sectype, section)
 
@@ -430,11 +430,11 @@ class Fixture(gp.MonkObject):
         return md.Device(**section)
 
     def parse_conns(self, name, sectype, section):
-        return {k:v for k,v in section.items()}
+        return {k:v for k,v in list(section.items())}
 
     def parse_logging(self, name, sectype, section):
         self.log("register all handlers")
-        for handler in section.values():
+        for handler in list(section.values()):
             handler.register()
         return self.testlogger
 
@@ -453,7 +453,7 @@ class Fixture(gp.MonkObject):
 
         """
         self.log("teardown")
-        for name, device in self.devs.items():
+        for name, device in list(self.devs.items()):
             device.close_all()
 
     def __str__(self):

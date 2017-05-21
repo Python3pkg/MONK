@@ -186,7 +186,7 @@ class Device(gp.MonkObject):
         """ loop through all connections calling :py:meth:`~monk_tf.conn.ConnectionBase.close`.
         """
         self.log("close_all()")
-        for c in self.conns.values():
+        for c in list(self.conns.values()):
             c.close()
 
     def __str__(self):
